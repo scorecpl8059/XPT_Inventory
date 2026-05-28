@@ -27,7 +27,7 @@ const auth0ClientId = process.env.AUTH0_CLIENT_ID ?? 'xtQxCfEJ8hZ4Io6sisEsbZUkIA
 
 // ── GitHub / CodeStar config ──────────────────────────────────────────────
 const githubOwner           = process.env.GITHUB_OWNER            ?? 'scorecpl8059'
-const githubRepo            = process.env.GITHUB_REPO             ?? 'xpt-inventory'
+const githubRepo            = process.env.GITHUB_REPO             ?? 'XPT_Inventory'
 const codeStarConnectionArn = process.env.CODESTAR_CONNECTION_ARN ?? 'arn:aws:codeconnections:us-east-1:322337309000:connection/b81c81e2-9fc5-4d62-8877-c01880d32229'
 const notificationEmail     = process.env.NOTIFICATION_EMAIL      ?? 'peiling.cai@xpt-tech.com'
 
