@@ -29,6 +29,7 @@ import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations'
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as s3 from 'aws-cdk-lib/aws-s3'
+import * as ssm from 'aws-cdk-lib/aws-ssm'
 import { Construct } from 'constructs'
 import * as path from 'path'
 
@@ -152,7 +153,8 @@ export class ApiStack extends cdk.Stack {
       prodList:          fn('ProdList',        'products/list'),
       prodGet:           fn('ProdGet',         'products/get'),
       prodUpdate:        fn('ProdUpdate',      'products/update'),
-      prodDelete:        fn('ProdDelete',      'products/delete'),
+      prodDelete:              fn('ProdDelete',       'products/delete'),
+      prodCreateFromProposal:  fn('ProdFromProposal',  'products/createFromProposal'),
 
       // Locations
       locCreate:         fn('LocCreate',       'locations/create'),
@@ -176,7 +178,7 @@ export class ApiStack extends cdk.Stack {
       tktAddMessage:     fn('TktAddMsg',       'tickets/addMessage'),
       tktListMessages:   fn('TktListMsg',      'tickets/listMessages'),
 
-      // Billing
+      // Billing (Stripe env vars injected separately below)
       billingCheckout:   fn('BillingCheckout', 'billing/createCheckout'),
       billingGet:        fn('BillingGet',      'billing/getSubscription'),
       billingPortal:     fn('BillingPortal',   'billing/createPortal'),
@@ -200,6 +202,26 @@ export class ApiStack extends cdk.Stack {
     // ── S3 upload permission ──────────────────────────────────────────────
     // TODO: Add upload-url handler when product image upload is implemented
     // uploadBucket.grantPut(handlers.prodUploadUrl)
+
+    // ── Stripe env vars for billing Lambdas ──────────────────────────────
+    const stripeSecretKey     = ssm.StringParameter.valueForStringParameter(this, '/xpt-inv/stripe-secret-key')
+    const stripeWebhookSecret = ssm.StringParameter.valueForStringParameter(this, '/xpt-inv/stripe-webhook-secret')
+    const stripePriceStarter  = ssm.StringParameter.valueForStringParameter(this, '/xpt-inv/stripe-price-starter')
+    const stripePricePro      = ssm.StringParameter.valueForStringParameter(this, '/xpt-inv/stripe-price-professional')
+
+    const stripeEnv = {
+      STRIPE_SECRET_KEY:        stripeSecretKey,
+      STRIPE_WEBHOOK_SECRET:    stripeWebhookSecret,
+      STRIPE_PRICE_STARTER:     stripePriceStarter,
+      STRIPE_PRICE_PROFESSIONAL: stripePricePro,
+    }
+    handlers.billingCheckout.addEnvironment('STRIPE_SECRET_KEY', stripeSecretKey)
+    handlers.billingCheckout.addEnvironment('STRIPE_PRICE_STARTER', stripePriceStarter)
+    handlers.billingCheckout.addEnvironment('STRIPE_PRICE_PROFESSIONAL', stripePricePro)
+    handlers.billingGet.addEnvironment('STRIPE_SECRET_KEY', stripeSecretKey)
+    handlers.billingPortal.addEnvironment('STRIPE_SECRET_KEY', stripeSecretKey)
+    handlers.billingWebhook.addEnvironment('STRIPE_SECRET_KEY', stripeSecretKey)
+    handlers.billingWebhook.addEnvironment('STRIPE_WEBHOOK_SECRET', stripeWebhookSecret)
 
     // ── SES permission for invitations ────────────────────────────────────
     handlers.invCreate.addToRolePolicy(new iam.PolicyStatement({
@@ -286,6 +308,7 @@ export class ApiStack extends cdk.Stack {
     route(apigwv2.HttpMethod.GET,    '/organizations/{orgId}/products/{id}',                 handlers.prodGet)
     route(apigwv2.HttpMethod.PATCH,  '/organizations/{orgId}/products/{id}',                 handlers.prodUpdate)
     route(apigwv2.HttpMethod.DELETE, '/organizations/{orgId}/products/{id}',                 handlers.prodDelete)
+    route(apigwv2.HttpMethod.POST,   '/organizations/{orgId}/proposals/{id}/create-product', handlers.prodCreateFromProposal)
 
     // Locations
     route(apigwv2.HttpMethod.POST,   '/organizations/{orgId}/locations',                     handlers.locCreate)
