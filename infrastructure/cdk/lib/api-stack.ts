@@ -18,9 +18,9 @@
  *   /organizations/{orgId}/movements          — stock movements
  *   /organizations/{orgId}/tickets            — support tickets (org-scoped)
  *   /tickets/{id}                             — ticket detail + messages
- *   /organizations/{orgId}/billing            — Stripe billing
- *   /webhooks/stripe                          — Stripe webhook
  *   /admin/*                                  — system admin endpoints
+ *
+ * NOTE: Stripe billing routes are excluded until billing is ready for production.
  */
 import * as cdk from 'aws-cdk-lib'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
@@ -29,7 +29,6 @@ import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations'
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as s3 from 'aws-cdk-lib/aws-s3'
-import * as ssm from 'aws-cdk-lib/aws-ssm'
 import { Construct } from 'constructs'
 import * as path from 'path'
 
@@ -178,12 +177,6 @@ export class ApiStack extends cdk.Stack {
       tktAddMessage:     fn('TktAddMsg',       'tickets/addMessage'),
       tktListMessages:   fn('TktListMsg',      'tickets/listMessages'),
 
-      // Billing (Stripe env vars injected separately below)
-      billingCheckout:   fn('BillingCheckout', 'billing/createCheckout'),
-      billingGet:        fn('BillingGet',      'billing/getSubscription'),
-      billingPortal:     fn('BillingPortal',   'billing/createPortal'),
-      billingWebhook:    fn('BillingWebhook',  'billing/stripeWebhook'),
-
       // Admin
       adminListTickets:  fn('AdminTickets',    'admin/listTickets'),
       adminListOrgs:     fn('AdminOrgs',       'admin/listOrganizations'),
@@ -202,26 +195,6 @@ export class ApiStack extends cdk.Stack {
     // ── S3 upload permission ──────────────────────────────────────────────
     // TODO: Add upload-url handler when product image upload is implemented
     // uploadBucket.grantPut(handlers.prodUploadUrl)
-
-    // ── Stripe env vars for billing Lambdas ──────────────────────────────
-    const stripeSecretKey     = ssm.StringParameter.valueForStringParameter(this, '/xpt-inv/stripe-secret-key')
-    const stripeWebhookSecret = ssm.StringParameter.valueForStringParameter(this, '/xpt-inv/stripe-webhook-secret')
-    const stripePriceStarter  = ssm.StringParameter.valueForStringParameter(this, '/xpt-inv/stripe-price-starter')
-    const stripePricePro      = ssm.StringParameter.valueForStringParameter(this, '/xpt-inv/stripe-price-professional')
-
-    const stripeEnv = {
-      STRIPE_SECRET_KEY:        stripeSecretKey,
-      STRIPE_WEBHOOK_SECRET:    stripeWebhookSecret,
-      STRIPE_PRICE_STARTER:     stripePriceStarter,
-      STRIPE_PRICE_PROFESSIONAL: stripePricePro,
-    }
-    handlers.billingCheckout.addEnvironment('STRIPE_SECRET_KEY', stripeSecretKey)
-    handlers.billingCheckout.addEnvironment('STRIPE_PRICE_STARTER', stripePriceStarter)
-    handlers.billingCheckout.addEnvironment('STRIPE_PRICE_PROFESSIONAL', stripePricePro)
-    handlers.billingGet.addEnvironment('STRIPE_SECRET_KEY', stripeSecretKey)
-    handlers.billingPortal.addEnvironment('STRIPE_SECRET_KEY', stripeSecretKey)
-    handlers.billingWebhook.addEnvironment('STRIPE_SECRET_KEY', stripeSecretKey)
-    handlers.billingWebhook.addEnvironment('STRIPE_WEBHOOK_SECRET', stripeWebhookSecret)
 
     // ── SES permission for invitations ────────────────────────────────────
     handlers.invCreate.addToRolePolicy(new iam.PolicyStatement({
@@ -332,12 +305,6 @@ export class ApiStack extends cdk.Stack {
     route(apigwv2.HttpMethod.PATCH,  '/tickets/{id}',                                        handlers.tktUpdate)
     route(apigwv2.HttpMethod.POST,   '/tickets/{id}/messages',                               handlers.tktAddMessage)
     route(apigwv2.HttpMethod.GET,    '/tickets/{id}/messages',                               handlers.tktListMessages)
-
-    // Billing
-    route(apigwv2.HttpMethod.POST,   '/organizations/{orgId}/billing/checkout',              handlers.billingCheckout)
-    route(apigwv2.HttpMethod.GET,    '/organizations/{orgId}/billing',                       handlers.billingGet)
-    route(apigwv2.HttpMethod.POST,   '/organizations/{orgId}/billing/portal',                handlers.billingPortal)
-    route(apigwv2.HttpMethod.POST,   '/webhooks/stripe',                                     handlers.billingWebhook)
 
     // Admin
     route(apigwv2.HttpMethod.GET,    '/admin/tickets',                                       handlers.adminListTickets)
