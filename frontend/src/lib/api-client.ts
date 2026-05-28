@@ -137,6 +137,9 @@ export class ApiClient {
   rejectProposal = (orgId: string, id: string, reason: string) =>
     this.request<Proposal>('POST', `/organizations/${orgId}/proposals/${id}/reject`, { reason })
 
+  createProductFromProposal = (orgId: string, proposalId: string) =>
+    this.request<{ productId: string; name: string }>('POST', `/organizations/${orgId}/proposals/${proposalId}/create-product`)
+
   listProposalComments = (orgId: string, proposalId: string) =>
     this.request<{ comments: ProposalComment[] }>('GET', `/organizations/${orgId}/proposals/${proposalId}/comments`)
 
@@ -180,7 +183,7 @@ export class ApiClient {
     this.request<{ stock: StockLevel[] }>('GET', `/organizations/${orgId}/stock/${productId}`)
 
   // ── Movements ──────────────────────────────────────────────────────────
-  listMovements = (orgId: string, params?: { from?: string; to?: string; productId?: string; cursor?: string }) =>
+  listMovements = (orgId: string, params?: { from?: string; to?: string; type?: string; productId?: string; cursor?: string }) =>
     this.request<{ movements: StockMovement[]; cursor?: string }>('GET', `/organizations/${orgId}/movements${buildQuery(params)}`)
 
   createMovement = (orgId: string, data: {
@@ -226,5 +229,5 @@ export class ApiClient {
     this.request<{ organizations: Organization[] }>('GET', '/admin/organizations')
 
   adminGetAnalytics = () =>
-    this.request<{ totalOrgs: number; totalUsers: number; ticketsByStatus: Record<string, number> }>('GET', '/admin/analytics')
+    this.request<{ totalOrganizations: number; totalUsers: number; totalTickets: number; openTickets: number }>('GET', '/admin/analytics')
 }
