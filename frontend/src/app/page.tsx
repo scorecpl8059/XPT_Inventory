@@ -26,130 +26,119 @@ export default function HomePage() {
 
   if (isLoading || isAuthenticated) {
     return (
-      <div style={{ minHeight: '100vh', background: '#050d1a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ width: 32, height: 32, borderRadius: '50%', border: '3px solid #1a6fd4', borderTopColor: 'transparent', animation: 'spin 0.8s linear infinite' }} />
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent" />
       </div>
     )
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#050d1a', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+    <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Brand bar */}
       <div style={{
         width: '100%',
-        padding: '12px 24px',
-        fontSize: 14,
-        fontWeight: 600,
-        letterSpacing: '0.05em',
-        color: '#e8f0fe',
-        background: 'linear-gradient(135deg, #1a6fd4 0%, #0b1626 100%)',
+        background: 'linear-gradient(135deg, #312e81 0%, #5b21b6 100%)',
+        padding: '2rem',
+        boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+        display: 'flex',
+        alignItems: 'center',
         transform: slideIn ? 'translateX(0)' : 'translateX(-120%)',
         transition: 'transform 700ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
       }}>
-        XPT-Inventory
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+          {/* Logo */}
+          <svg width="58" height="58" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="invGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#6366F1" />
+                <stop offset="100%" stopColor="#8B5CF6" />
+              </linearGradient>
+              <clipPath id="invClip">
+                <rect width="44" height="44" rx="10" />
+              </clipPath>
+            </defs>
+            <rect width="44" height="44" rx="10" fill="url(#invGrad)" />
+            {/* Box / inventory icon */}
+            <rect x="10" y="20" width="24" height="16" rx="2" fill="white" opacity="0.9" />
+            <rect x="10" y="14" width="24" height="7" rx="2" fill="white" opacity="0.6" />
+            <rect x="18" y="14" width="8" height="7" rx="1" fill="white" opacity="0.9" />
+            <rect x="16" y="24" width="12" height="2" rx="1" fill="url(#invGrad)" opacity="0.8" />
+            <g clipPath="url(#invClip)">
+              <rect x="34" y="14.5" width="12" height="2.5" rx="1.25" fill="white" opacity=".4" />
+              <rect x="37" y="19.5" width="10" height="2" rx="1" fill="white" opacity=".25" />
+            </g>
+          </svg>
+          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.3 }}>
+            <span style={{ color: '#ffffff', fontWeight: 700, fontSize: '1.75rem', letterSpacing: '0.02em' }}>XPT-Tech</span>
+            <span style={{ color: '#a5b4fc', fontWeight: 400, fontSize: '1rem' }}>Inventory Management</span>
+          </div>
+        </div>
       </div>
 
-      {/* Centred content */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', gap: 24 }}>
+      {/* Content */}
+      <div className="flex flex-col items-center justify-center flex-1 px-6 gap-6">
         {/* Hero card */}
         <div style={{
-          width: '100%',
-          maxWidth: 720,
+          width: '70%',
           transform: slideIn ? 'translateX(0)' : 'translateX(-120%)',
           transition: 'transform 700ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
         }}>
-          <section style={{
-            background: 'linear-gradient(135deg, #1a6fd4 0%, #0b1626 100%)',
-            borderRadius: 16,
-            padding: '48px 40px',
-            boxShadow: '0 20px 60px rgba(26,111,212,0.25)',
-            border: '1px solid rgba(55,138,221,0.18)',
-          }}>
-            <h2 style={{ fontSize: 30, fontWeight: 700, color: '#ffffff', marginBottom: 16, letterSpacing: -0.5 }}>
-              XPT-Inventory
-            </h2>
-            <p style={{ color: 'rgba(232,240,254,0.75)', fontSize: 15, lineHeight: 1.7, maxWidth: 480 }}>
-              Product lifecycle management for small businesses<br />
-              — from proposal to shelf, all in one platform.
+          <section
+            className="text-white rounded-2xl px-10 py-12 shadow-xl"
+            style={{ background: 'linear-gradient(135deg, #312e81 0%, #5b21b6 100%)' }}
+          >
+            <h2 className="text-3xl font-bold mb-4">XPT-Inventory</h2>
+            <p className="text-indigo-100 text-base leading-relaxed max-w-xl mb-2">
+              A product lifecycle management platform for small businesses — manage proposals,
+              products, and multi-location inventory all in one place. Streamline your operations
+              from product idea to shelf with role-based access and real-time stock tracking.
             </p>
-            <ul style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {[
-                'Product proposal workflow with approval chains',
-                'Multi-location inventory tracking and stock alerts',
-                'Role-based access for owners, managers, and staff',
-              ].map(item => (
-                <li key={item} style={{ fontSize: 13, color: 'rgba(55,138,221,0.9)', letterSpacing: '0.03em', listStyle: 'none' }}>
-                  ✦ {item}
-                </li>
-              ))}
+            <ul className="mt-5 space-y-1 text-sm text-indigo-200">
+              <li>✦ Product proposal workflow with approval chains</li>
+              <li>✦ Multi-location inventory tracking and low-stock alerts</li>
+              <li>✦ Role-based access for owners, managers, and staff</li>
+              <li>✦ In-app support ticket system</li>
             </ul>
           </section>
         </div>
 
         {/* Auth card */}
-        <div style={{
-          width: '100%',
-          maxWidth: 720,
-          background: 'rgba(11,22,38,0.8)',
-          border: '1px solid rgba(55,138,221,0.18)',
-          borderRadius: 12,
-          padding: '20px 32px',
-          backdropFilter: 'blur(8px)',
-          opacity: showActions ? 1 : 0,
-          transform: showActions ? 'translateY(0)' : 'translateY(8px)',
-          transition: 'opacity 400ms ease-out, transform 400ms ease-out',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 12,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-            <p style={{ fontSize: 13, color: '#5a7499' }}>Already have an account?</p>
+        <div
+          className="bg-white rounded-xl px-8 py-5 shadow-sm space-y-3"
+          style={{
+            width: '70%',
+            opacity: showActions ? 1 : 0,
+            transform: showActions ? 'translateY(0)' : 'translateY(8px)',
+            transition: 'opacity 400ms ease-out, transform 400ms ease-out',
+            marginTop: '1.5rem',
+          }}
+        >
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-500">Already have an account?</p>
             <button
               onClick={() => loginWithRedirect({ appState: { returnTo: '/dashboard' } })}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                width: 128, flexShrink: 0, justifyContent: 'center',
-                background: '#1a6fd4',
-                color: '#fff', fontWeight: 600, fontSize: 13,
-                padding: '9px 20px', borderRadius: 8, border: 'none',
-                cursor: 'pointer', transition: 'background 0.2s',
-                letterSpacing: '0.03em',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#378ADD')}
-              onMouseLeave={e => (e.currentTarget.style.background = '#1a6fd4')}
+              className="inline-flex items-center justify-center gap-2 w-32 text-white font-semibold text-sm px-5 py-2 rounded-lg shadow transition-colors hover:bg-indigo-700"
+              style={{ backgroundColor: '#4338ca' }}
             >
               Sign In
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </button>
           </div>
-
-          <div style={{ borderTop: '1px solid rgba(55,138,221,0.12)' }} />
-
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-            <p style={{ fontSize: 13, color: '#5a7499' }}>New here? Create an account to get started.</p>
+          <div className="border-t border-gray-100" />
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-500">New here? Create an account to get started.</p>
             <button
               onClick={() => loginWithRedirect({
                 appState: { returnTo: '/dashboard' },
                 authorizationParams: { screen_hint: 'signup' },
               })}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                width: 128, flexShrink: 0, justifyContent: 'center',
-                background: 'transparent',
-                color: '#5a7499', fontWeight: 600, fontSize: 13,
-                padding: '9px 20px', borderRadius: 8,
-                border: '1px solid rgba(55,138,221,0.25)',
-                cursor: 'pointer', transition: 'border-color 0.2s, color 0.2s',
-                letterSpacing: '0.03em',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#378ADD'; e.currentTarget.style.color = '#378ADD' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(55,138,221,0.25)'; e.currentTarget.style.color = '#5a7499' }}
+              className="inline-flex items-center justify-center gap-2 w-32 text-white font-semibold text-sm px-5 py-2 rounded-lg shadow transition-colors hover:bg-indigo-700"
+              style={{ backgroundColor: '#4338ca' }}
             >
               Register
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -157,7 +146,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 16, padding: '16px', fontSize: 11, color: '#5a7499', letterSpacing: '0.05em' }}>
+      <div className="flex justify-center gap-4 py-4 text-xs text-gray-400">
         <span>&copy; {new Date().getFullYear()} XPT-Tech LLC</span>
         <span>&middot;</span>
         <span>All rights reserved</span>
