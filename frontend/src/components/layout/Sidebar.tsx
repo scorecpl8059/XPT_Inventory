@@ -25,6 +25,8 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useOrg } from '@/contexts/OrgContext'
+import { useApiClient } from '@/hooks/useApiClient'
+import { useQuery } from '@tanstack/react-query'
 
 // ── Mobile sidebar context ───────────────────────────────────────────────
 
@@ -74,7 +76,13 @@ export function Sidebar() {
   const pathname = usePathname()
   const { mobileOpen, setMobileOpen } = useSidebar()
   const { activeOrg } = useOrg()
-  const isAdmin = false // TODO: check user profile isAdmin
+  const api = useApiClient()
+  const { data: profile } = useQuery({
+    queryKey: ['userProfile'],
+    queryFn: () => api.getUserProfile(),
+    staleTime: 5 * 60 * 1000,
+  })
+  const isAdmin = profile?.isAdmin ?? false
 
   useEffect(() => {
     setMobileOpen(false)

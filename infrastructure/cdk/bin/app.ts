@@ -23,7 +23,7 @@ const env = {
 // TODO: Update these after creating the Auth0 application for XPT-Inventory
 const auth0Domain   = process.env.AUTH0_DOMAIN   ?? 'xpt-tech.us.auth0.com'
 const auth0Audience = process.env.AUTH0_AUDIENCE  ?? 'https://api.inv.xpt-tech.com'
-const auth0ClientId = process.env.AUTH0_CLIENT_ID ?? 'PLACEHOLDER_CLIENT_ID'
+const auth0ClientId = process.env.AUTH0_CLIENT_ID ?? 'xtQxCfEJ8hZ4Io6sisEsbZUkIAw0ocFO'
 
 // ── GitHub / CodeStar config ──────────────────────────────────────────────
 const githubOwner           = process.env.GITHUB_OWNER            ?? 'scorecpl8059'
